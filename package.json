@@ -1,0 +1,52 @@
+{
+  "name": "coss.io",
+  "version": "0.0.1",
+  "description": "COSSbot",
+  "author": "Cryptodeal, Jan (impmja) Schulte",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "COSS.io",
+    "javascript",
+    "crypto"
+  ],
+  "engineStrict": true,
+  "engines": {
+    "node": ">= 9.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cryptodeal/COSSbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cryptodeal/COSSbot/issues"
+  },
+  "homepage": "https://github.com/cryptodeal/COSSbot",
+  "main": "lib/index",
+  "types": "lib/index",
+  "scripts": {
+    "prepublishOnly": "tsc",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "start": "node ./COSSbot/main.js",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "devDependencies": {
+    "request": "2.86.0",
+    "prompt": "1.0.0",
+    "readline-sync": "1.4.9",
+    "@types/node": "9.4.6",
+    "nodemon": "1.15.1",
+    "prettier": "1.10.2",
+    "ts-node": "5.0.0",
+    "tslint": "5.9.1",
+    "typescript": "2.7.2"
+  },
+  "dependencies": {
+    "axios": "0.18.0",
+    "cookies-js": "1.2.3",
+    "set-cookie-parser": "2.1.2",
+    "opn": "5.3.0",
+    "express": "4.16.3"
+  }
+}
