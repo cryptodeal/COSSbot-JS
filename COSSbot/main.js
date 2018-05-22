@@ -1,18 +1,11 @@
 const CossIOLib = require('./../lib');
 const cossAPI = require('./coss-api');
-const opn = require('opn');
-const express = require('express');
+
 
 
 const main = async () => {
     const api = cossAPI();
-    const app = express();
-    app.get('/', (req, res) => res.send('Welcome to COSSbot localhost; Please leave this tab open. GUI functionalities coming soon.'));
-
-    app.listen(3000, () => console.log('Example app listening on port 3000!'));
     
-    console.log('COSSbot server available and running at http://localhost:3000');
-    console.log('');
     //TODO: Implement COSSbot GUI on localhost server.
     console.log('Please follow these steps: ');
     console.log('  ');
