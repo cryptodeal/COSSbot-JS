@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "Server for COSSbot",
+  "author": "Cryptodeal",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "COSS.io",
+    "javascript",
+    "crypto"
+  ],
+  "engineStrict": true,
+  "engines": {
+    "node": ">= 9.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryptodeal/COSSbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cryptodeal/COSSbot/issues"
+  },
+  "homepage": "https://github.com/cryptodeal/COSSbot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "4.16.3"
+  }
+}
