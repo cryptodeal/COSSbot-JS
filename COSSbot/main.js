@@ -2,19 +2,11 @@ const CossIOLib = require('./../lib');
 const cossAPI = require('./coss-api');
 
 
-
-
 const main = async () => {
     const api = cossAPI();
+    const child = require('child_process').fork('./Server');
+    var readlineSync = require('readline-sync');
 
-    //TODO: Implement COSSbot GUI on localhost server.
-        //send request to http://localhost:4000
-        //if no reply, run the below fork of child process
-        
-        
-    var fork = require('child_process').fork;
-    var child = fork('./../Server');
-    //TODO: LOG PID of child process or otherwise figure out how tf to close it lmao
     
     console.log('COSSbot initializing...');
     console.log('');
@@ -26,20 +18,21 @@ const main = async () => {
     console.log('3. Select the exchange once you have logged in.');
     console.log('4. Click the COSSbot Validator Chrome Extension and wait for session confirmation in COSSbot Commandline Interface');
     
+    //TODO: SET VALUES OF DATA1, DATA2, AND DATA3, TO VALUES OF CORRESPONDING (request.body.value) FROM CHILD PROCESS (server.js)
+    var data1 = '' ;
+    var data2 = '';
+    var data3 = '';
     
-   
-    var readlineSync = require('readline-sync');
-    //request Private API verification from user
-    //var cfduid = readlineSync.question('C :  ');
-   // var coss = readlineSync.question('CS :  ');
-   // var xsrf = readlineSync.question('XT:  ');
+    var userReady = readlineSync.question('Please confirm that you have completed the process by pressing enter. ');
+
 
 
     try {
+
         const cossIO = new CossIOLib.CossIO({
-          cfduid: 'cfduid',
-          coss: 's%3Aef113fb4-982b-4ff5-9ffa-8771ad2f92ac.NxL0DxQ7QsmqUE%2Br6OX3ulZUqEafj%2FU%2Bhvvsq3IS48o',
-          xsrf: 'M2zFlXUR-TGW7Zj0Wk-DjmBLQtSnAvZsu2QY',
+          cfduid: data1,
+          coss: data3,
+          xsrf: data2,
         });
     
         const session = await cossIO.requestSession();
@@ -260,8 +253,9 @@ const main = async () => {
                     } else if (manualCommand === 'q' || manualCommand === 'quit'){
                         console.log(' You have selected to quit COSSbot... ');
                         console.log(' Goodbye! '); 
+                        child.kill()
                         process.exit(main.js)
-                        fork.kill('SIGKILL')
+                        
 
 
                     } else if (manualCommand !== 'b' || manualCommand !== 'back') 
@@ -287,8 +281,9 @@ const main = async () => {
             //implemented user selection q to exit code
             console.log(' You have selected to quit COSSbot... ')
             console.log(' Goodbye! ') 
+            child.kill()
             process.exit(main.js)
-            process.kill()
+            
 
 
          } else 
