@@ -4,8 +4,11 @@ const cossAPI = require('./coss-api');
 
 const main = async () => {
     const api = cossAPI();
-    const child = require('child_process').fork('./Server');
-    var readlineSync = require('readline-sync');
+    var readlineSync = require('readline-sync')
+    const child = require('child_process').fork('./Server', [], { silent: true });
+    var data1;
+    var data2;
+    var data3;
 
     
     console.log('COSSbot initializing...');
@@ -16,16 +19,36 @@ const main = async () => {
     console.log('1. Open session of google chrome. ');
     console.log('2. Log into coss.io.');
     console.log('3. Select the exchange once you have logged in.');
-    console.log('4. Click the COSSbot Validator Chrome Extension and wait for session confirmation in COSSbot Commandline Interface');
-    
+    console.log('4. You have 30 seconds to click the COSSbot Validator Chrome Extension.');
+    var gotValidators = 0;
+    child.stdout.on('data', function(data) {
+        console.log(data);
+      });
+      child.stderr.on('data', function(data) {
+        console.log('stdout: ' + data);
+      });
+      child.on('message', function(msg) {
+        message = require('util').inspect(msg);
+        var array = message.split('\n',);
+        data3 = array[3]
+        console.log(data3);
+        data1 = array[1];
+        console.log(data1)
+        data2 = array[2];
+        console.log(data2);
+        gotValidators = array[0];
+      });
+      child.on('close', function(code) {
+        console.log('closing code: ' + code);
+      });
+
     //TODO: SET VALUES OF DATA1, DATA2, AND DATA3, TO VALUES OF CORRESPONDING (request.body.value) FROM CHILD PROCESS (server.js)
-    var data1 = '' ;
-    var data2 = '';
-    var data3 = '';
+
+
     
-    var userReady = readlineSync.question('Please confirm that you have completed the process by pressing enter. ');
-
-
+    
+    
+    if (gotValidators =! 0){
 
     try {
 
@@ -292,6 +315,7 @@ const main = async () => {
     } catch (error) {
         console.error('Something bad happend :/', error);
       }
+    }
 };
 
 main();
