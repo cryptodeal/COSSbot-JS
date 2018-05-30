@@ -5,11 +5,20 @@ const cossAPI = require('./coss-api');
 const main = async () => {
     const api = cossAPI();
     var readlineSync = require('readline-sync')
+    var sync = require('synchronize');
+    var gotValidators;
+    var response = 0;
+    var util = require('util')
+    
     const child = require('child_process').fork('./Server', [], { silent: true });
-    var data1;
-    var data2;
-    var data3;
 
+        child.on('message', function(msg){
+            //line below works to print cookies from child process received from extension
+            console.log(msg);
+            //line below doesn't work to set value of return = msg
+            // return = (msg);
+           });
+        
     
     console.log('COSSbot initializing...');
     console.log('');
@@ -18,37 +27,31 @@ const main = async () => {
     console.log('  ');
     console.log('1. Open session of google chrome. ');
     console.log('2. Log into coss.io.');
-    console.log('3. Select the exchange once you have logged in.');
+    console.log('3. Select the exchange tab once you have logged in.');
     console.log('4. You have 30 seconds to click the COSSbot Validator Chrome Extension.');
-    var gotValidators = 0;
-    child.stdout.on('data', function(data) {
-        console.log(data);
-      });
-      child.stderr.on('data', function(data) {
-        console.log('stdout: ' + data);
-      });
-      child.on('message', function(msg) {
-        message = require('util').inspect(msg);
-        var array = message.split('\n',);
-        data3 = array[3]
-        console.log(data3);
-        data1 = array[1];
-        console.log(data1)
-        data2 = array[2];
-        console.log(data2);
-        gotValidators = array[0];
-      });
-      child.on('close', function(code) {
-        console.log('closing code: ' + code);
-      });
-
-    //TODO: SET VALUES OF DATA1, DATA2, AND DATA3, TO VALUES OF CORRESPONDING (request.body.value) FROM CHILD PROCESS (server.js)
 
 
+if (response !== 0)
+{
+    sync.fiber(function(){
+        var array = response.split(",");
+        var data1 = array[0];
+        var data2 = array[2];
+        var data3 = array[3];
+        gotValidators = 1;
+    });
+}
+
+
+      //1- do the child.on process above
+      //2- split the string into an array w 3 places
+      //3- set data1 = array position [0], data2 = array position [1], data3 = array position [2]
+
+
+   
     
-    
-    
-    if (gotValidators =! 0){
+
+    if(gotValidators === 1){
 
     try {
 
