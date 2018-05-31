@@ -4,7 +4,7 @@ const app = express()
 
 var data1;
 var data2;
-var data3;
+var data3 = 0;
 
 
 app.get('/', (req, res) => res.send('COSSbot Localhost Server'))
@@ -36,7 +36,7 @@ app.post("/data3", function(request, response) {
     
     //console.log(data3);
     });
-  
+    
 
 //use callback functions to execute code in proper order :)
 
