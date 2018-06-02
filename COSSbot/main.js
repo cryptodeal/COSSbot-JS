@@ -1,25 +1,19 @@
-const CossIOLib = require('./../lib');
-const cossAPI = require('./coss-api');
+const CossIOLib = require('./../lib'); //these need to be usable from below
+const cossAPI = require('./coss-api'); //these need to be usable from below
 
 
 const main = async () => {
-    const api = cossAPI();
+    const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
     var sync = require('synchronize');
-    var gotValidators;
-    var response = 0;
     var util = require('util')
-    
+    var stopBot = 0;
+    var data1 = 'kxclkjvlkjsdfjoiwjeif';
+    var data2 = 'alsdjflkaj[weoijfpioqjweoijfiojpsdf';
+    var data3 = 'as;lkdjf;lwjeoirjfpqewiojfpoijsdojflkd';
+
     const child = require('child_process').fork('./Server', [], { silent: true });
 
-        child.on('message', function(msg){
-            //line below works to print cookies from child process received from extension
-            console.log(msg);
-            //line below doesn't work to set value of return = msg
-            // return = (msg);
-           });
-        
-    
     console.log('COSSbot initializing...');
     console.log('');
     console.log('');
@@ -30,45 +24,41 @@ const main = async () => {
     console.log('3. Select the exchange tab once you have logged in.');
     console.log('4. You have 30 seconds to click the COSSbot Validator Chrome Extension.');
 
-
-if (response !== 0)
-{
-    sync.fiber(function(){
-        var array = response.split(",");
-        var data1 = array[0];
-        var data2 = array[2];
-        var data3 = array[3];
-        gotValidators = 1;
-    });
-}
-
-
-      //1- do the child.on process above
-      //2- split the string into an array w 3 places
-      //3- set data1 = array position [0], data2 = array position [1], data3 = array position [2]
-
-
-   
     
-
-    if(gotValidators === 1){
-
-    try {
-
-        const cossIO = new CossIOLib.CossIO({
+  
+    child.on('message', function(msg) {
+        var cookie = JSON.stringify(msg);
+        didUpdateCookie(cookie);
+    });
+    function didUpdateCookie() { //function wraps the remainder of the bot so that data1, data2, and data3 are accessible to the bot for validation
+       
+        console.log(cookie);
+        console.log('COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------')
+         var array = cookie.split(",");
+         var data1 = array[0];
+         var data2 = array[1];
+         var data3 = array[2];
+         console.log(data1) //these 3 values need to be accessible from the processes below aka the trading portion
+         console.log(data2)
+         console.log(data3)
+    
+        
+try {
+        const cossIO =  new CossIOLib.CossIO({
           cfduid: data1,
-          coss: data3,
-          xsrf: data2,
+          coss: data2,
+          xsrf: data3,
         });
     
-        const session = await cossIO.requestSession();
+    
+        const session = await cossIO.requestSession(); //now getting an error here saying that reference error, unexpected identifier cossIO
         console.log('Session:', session);
         console.log('---------------------------------');
 
         //implement listener so Command Line waits for user to pres m, a, or q and then enter to set value to tradingMode variable.
         var tradingMode = 0;
         while (tradingMode !== 'm' || tradingMode !== 'a') {
-        var tradingMode = readlineSync.question('Use COSSbot manually (m), automatic trading (a), or quit (q)?  ');
+        //var tradingMode = readlineSync.question('Use COSSbot manually (m), automatic trading (a), or quit (q)?  ');
         if (tradingMode === 'm') {
             console.log('You have selected COSSbot Manual trading mode.');
             console.log(' Manual trading mode initializing...');
@@ -315,10 +305,13 @@ if (response !== 0)
          } else 
             console.log('Invalid command; Please try again...')
         }
+    
     } catch (error) {
         console.error('Something bad happend :/', error);
       }
-    }
+
+    } //end of function didUpdateCookie(cookie)
+    
 };
 
 main();
