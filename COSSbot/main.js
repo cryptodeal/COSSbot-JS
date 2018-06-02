@@ -1,11 +1,15 @@
 const CossIOLib = require('./../lib'); //these need to be usable from below
 const cossAPI = require('./coss-api'); //these need to be usable from below
+var cookie
+var data1 
+         var data2 
+         var data3 
 
 
 const main = async () => {
     const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
-    var sync = require('synchronize');
+    //var sync = require('synchronize');
     var util = require('util')
     var stopBot = 0;
     var data1 = 'kxclkjvlkjsdfjoiwjeif';
@@ -27,17 +31,21 @@ const main = async () => {
     
   
     child.on('message', function(msg) {
-        var cookie = JSON.stringify(msg);
+        cookie = JSON.stringify(msg);
         didUpdateCookie(cookie);
     });
-    function didUpdateCookie() { //function wraps the remainder of the bot so that data1, data2, and data3 are accessible to the bot for validation
+    async function didUpdateCookie() { //function wraps the remainder of the bot so that data1, data2, and data3 are accessible to the bot for validation
        
         console.log(cookie);
         console.log('COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------')
          var array = cookie.split(",");
-         var data1 = array[0];
-         var data2 = array[1];
-         var data3 = array[2];
+        data1 = array[0];
+		data1 = data1.replace(/['"]+/g, '')
+        data2 = array[1];
+		 
+        data3 = array[2];
+		data3 = data3.replace(/['"]+/g, '')
+		 
          console.log(data1) //these 3 values need to be accessible from the processes below aka the trading portion
          console.log(data2)
          console.log(data3)
@@ -46,8 +54,8 @@ const main = async () => {
 try {
         const cossIO =  new CossIOLib.CossIO({
           cfduid: data1,
-          coss: data2,
-          xsrf: data3,
+          coss: data3,
+          xsrf: data2,
         });
     
     //2- need the above creation of const cossIO to have occurred prior to the below creation of const session
@@ -59,7 +67,7 @@ try {
         //implement listener so Command Line waits for user to pres m, a, or q and then enter to set value to tradingMode variable.
         var tradingMode = 0;
         while (tradingMode !== 'm' || tradingMode !== 'a') {
-        //var tradingMode = readlineSync.question('Use COSSbot manually (m), automatic trading (a), or quit (q)?  ');
+        var tradingMode = readlineSync.question('Use COSSbot manually (m), automatic trading (a), or quit (q)?  ');
         if (tradingMode === 'm') {
             console.log('You have selected COSSbot Manual trading mode.');
             console.log(' Manual trading mode initializing...');
