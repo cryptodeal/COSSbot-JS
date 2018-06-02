@@ -42,7 +42,7 @@ const main = async () => {
          console.log(data2)
          console.log(data3)
     
-        
+//1- need bot to wait for the values of data1, data2, and data3 to have been parsed above before executing this try        
 try {
         const cossIO =  new CossIOLib.CossIO({
           cfduid: data1,
@@ -50,11 +50,12 @@ try {
           xsrf: data3,
         });
     
-    
+    //2- need the above creation of const cossIO to have occurred prior to the below creation of const session
         const session = await cossIO.requestSession(); //now getting an error here saying that reference error, unexpected identifier cossIO
         console.log('Session:', session);
         console.log('---------------------------------');
 
+        //3- NEED THE BELOW LISTENER TO WAIT UNTIL SESSION HAS BEEN DECLARED PRIOR TO PROMPTING THE USER FOR INPUT
         //implement listener so Command Line waits for user to pres m, a, or q and then enter to set value to tradingMode variable.
         var tradingMode = 0;
         while (tradingMode !== 'm' || tradingMode !== 'a') {
