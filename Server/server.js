@@ -35,6 +35,7 @@ app.post("/data3", function(request, response) {
     //TODO set var data3 in parent process (main.js) = (request.body.value) 
     
     //console.log(data3);
+    sendValidation();
     });
     
 
@@ -44,7 +45,7 @@ app.post("/data3", function(request, response) {
 //{
     
 //}
-
+function sendValidation(){
 console.log('Waiting for COSSbot Validation to complete......');
 setTimeout(function() {
   
@@ -53,8 +54,8 @@ setTimeout(function() {
   }
   ret_resp();
   console.log('Received Validation Data...');
-}, 10000);       
-
+}, 1000);       
+}
          
 app.listen(4000, () => console.log('COSSbot Server running on port 4000!'))
 
