@@ -9,13 +9,8 @@ var data1
 const main = async () => {
     const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
-    //var sync = require('synchronize');
-    var util = require('util')
-    var stopBot = 0;
-    var data1 = 'kxclkjvlkjsdfjoiwjeif';
-    var data2 = 'alsdjflkaj[weoijfpioqjweoijfiojpsdf';
-    var data3 = 'as;lkdjf;lwjeoirjfpqewiojfpoijsdojflkd';
-
+   
+    
     const child = require('child_process').fork('./Server', [], { silent: true });
 
     console.log('COSSbot initializing...');
@@ -26,7 +21,7 @@ const main = async () => {
     console.log('1. Open session of google chrome. ');
     console.log('2. Log into coss.io.');
     console.log('3. Select the exchange tab once you have logged in.');
-    console.log('4. You have 30 seconds to click the COSSbot Validator Chrome Extension.');
+    console.log('4. Once you are on the Coss.io Exchange tab, please click on the COSSbot Validator chrome extension.');
 
     
   
@@ -36,7 +31,7 @@ const main = async () => {
     });
     async function didUpdateCookie() { //function wraps the remainder of the bot so that data1, data2, and data3 are accessible to the bot for validation
        
-        console.log(cookie);
+        //console.log(cookie);
         console.log('COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------')
          var array = cookie.split(",");
         data1 = array[0];
@@ -46,9 +41,9 @@ const main = async () => {
         data3 = array[2];
 		data3 = data3.replace(/['"]+/g, '')
 		 
-         console.log(data1) //these 3 values need to be accessible from the processes below aka the trading portion
-         console.log(data2)
-         console.log(data3)
+         //console.log(data1) //these 3 values need to be accessible from the processes below aka the trading portion
+         //console.log(data2)
+         //console.log(data3)
     
 //1- need bot to wait for the values of data1, data2, and data3 to have been parsed above before executing this try        
 try {
@@ -70,7 +65,7 @@ try {
         var tradingMode = readlineSync.question('Use COSSbot manually (m), automatic trading (a), or quit (q)?  ');
         if (tradingMode === 'm') {
             console.log('You have selected COSSbot Manual trading mode.');
-            console.log(' Manual trading mode initializing...');
+            console.log('Manual trading mode initializing...\n');
             
                 while (manualCommand !== 'b' || manualCommand !== 'back'){
                     var manualCommand = readlineSync.question('Please select a command for COSSbot to execute. Type help (h) to see all options:   ');
@@ -97,13 +92,13 @@ try {
                         console.log('You have selected to place a sell order....')
                         console.log('----------------------------------------------');
                         console.log('');
-                        var buyType = readlineSync.question('Would you like to place a limit buy (1) or market buy (2):  ');
+                        var buyType = readlineSync.question('Would you like to place a limit sell (1) or market sell (2):  ');
                         if (buyType === '1'){
-                        console.log('You have selected to place a limit buy...');
+                        console.log('You have selected to place a limit sell...');
                         console.log('-----------------------------------------------');
                         console.log('');
                         var pairSelected = readlineSync.question('Enter a trading pair (currency-pairing) e.g. coss-eth:  ');
-                        var sellPrice = readlineSync.question('Please enter your desired ask price per unit in pairing (e.g. ETH/BTC)  :  ');
+                        var sellPrice = readlineSync.question('Please enter your desired ask price per unit in pairing (e.g. ETH/BTC/FIAT):  ');
                         var amount = readlineSync.question('Please enter the amount you want to sell:  ');
                           try {
                             const placedOrder = await cossIO.placeOrder({
@@ -121,24 +116,33 @@ try {
                         }
                         }
                         else if (buyType === '2'){
-                        console.log('You have selected to place a market sell...');
-                        console.log('-----------------------------------------------');
-                        console.log('');
-                        var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-                        var amount = readlineSync.question('Please enter the amount you want to sell at market value:  ');
-                          try {
-                            const placedOrder = await cossIO.placeOrder({
-                            symbol: pairSelected,
-                            side: CossIOLib.CossIOOrderSide.SELL,
-                            type: CossIOLib.CossIOOrderType.MARKET,
-                            //price: buyPrice,
-                            amount: amount,
-                            session,
-                            });
-                            console.log('Placed Order:', placedOrder);
-                            console.log('---------------------------------');
-                        } catch (error) {
-                            console.error('Failed to place market sell order...', error);
+                            console.log('You have selected to place a market sell...');
+                            console.log('----------------------------------------------- \n');
+                            var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+                                const depth = await cossIO.requestDepth({ symbol: pairSelected });
+                                console.log('First Bid', depth.bids[0]);
+                                sellPrice = depth.bids[0].price
+                            var amount = readlineSync.question('Please enter the amount you want to sell:  ');
+                            if (depth.bids[0].volume >= amount)
+                            {
+                              try {
+                                const placedOrder = await cossIO.placeOrder({
+                                symbol: pairSelected,
+                                side: CossIOLib.CossIOOrderSide.SELL,
+                                type: CossIOLib.CossIOOrderType.LIMIT,
+                                price: buyPrice,
+                                amount: amount,
+                                session,
+                                });
+                                console.log('Placed Order:', placedOrder);
+                                console.log('---------------------------------');
+                            } catch (error) {
+                                console.error('Failed to place market sell order...', error);
+                            }
+                        }
+                        else {
+                            console.log('You are attempting to attempting to sell more than the volume of the best bid. \n Please try again...')
+                            
                         }
                         }    
 
@@ -209,7 +213,7 @@ try {
                         console.log('You have selected to place a limit buy...');
                         console.log('-----------------------------------------------');
                         var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-                        var buyPrice = readlineSync.question('Please enter the price of your bid in (pairing, e.g. ETH/BTC  :  ');
+                        var buyPrice = readlineSync.question('Please enter the price of your bid price in (pairing, e.g. ETH/BTC/FIAT):  ');
                         var amount = readlineSync.question('Please enter the amount you want to buy:  ');
                           try {
                             const placedOrder = await cossIO.placeOrder({
@@ -228,15 +232,20 @@ try {
                         }
                         else if (buyType === '2'){
                         console.log('You have selected to place a market buy...');
-                        console.log('-----------------------------------------------');
+                        console.log('----------------------------------------------- \n');
                         var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+                            const depth = await cossIO.requestDepth({ symbol: pairSelected });
+                            console.log('First Ask', depth.asks[0]);
+                            buyPrice = depth.asks[0].price
                         var amount = readlineSync.question('Please enter the amount you want to buy:  ');
+                        if (depth.asks[0].volume >= amount)
+                        {
                           try {
                             const placedOrder = await cossIO.placeOrder({
                             symbol: pairSelected,
                             side: CossIOLib.CossIOOrderSide.BUY,
-                            type: CossIOLib.CossIOOrderType.MARKET,
-                            //price: buyPrice,
+                            type: CossIOLib.CossIOOrderType.LIMIT,
+                            price: buyPrice,
                             amount: amount,
                             session,
                             });
@@ -245,22 +254,24 @@ try {
                         } catch (error) {
                             console.error('Failed to place market buy order...', error);
                         }
+                    }
+                    else {
+                        console.log('You are attempting to attempting to buy more than the volume of the best ask. \n Please try again...')
+                        
+                    }
                         }
-                    //} else if (manualCommand === '8'){
-                    //     var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-                    //    try {
-                    //        const tickerCossETH = await cossIO.requestTicker({ symbol: pairSelected });
-                    //        console.log('Ticker: ', pairSelected);
-                    //        console.log(`Current Price: '${tickerCossETH.price.toFixed(8)}'`);
-                    //        console.log('---------------------------------');
+                    } else if (manualCommand === '8'){
+                        var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+                        try {
+                            const tickerPairSelected = await cossIO.requestTicker({ symbol: pairSelected });
+                            console.log('Ticker: ', pairSelected);
+                            console.log(`Current Price: '${tickerPairSelected.price.toFixed(8)}'`);
+                            console.log('---------------------------------\n');
                     
-                    //        const tickerCossBTC = await cossIO.requestTicker({ symbol: 'coss-btc' });
-                    //        console.log('Ticker: COSS/BTC');
-                    //        console.log(`Current Price: '${tickerCossBTC.price.toFixed(8)}'`);
-                    //        console.log('---------------------------------');
-                    //      } catch (error) {
-                    //        console.error('Failed to request ticker', error);
-                    //      }
+                    
+                          } catch (error) {
+                            console.error('Failed to request ticker', error);
+                          }
 
                     } else if (manualCommand === '9'){
                         try {
@@ -296,11 +307,14 @@ try {
 //THE AUTOMATED CODING SECTION IMMEDIATELY BELOW WILL UTILIZE THE SAME COMMANDS AS THE MANUAL SECTION, BUT W A SIMPLE LOGICAL TRADING ALGO
 
         } else if (tradingMode === 'a') {
-            console.log(' You have selected COSSbot Automated trading mode. ');
-            function automatedMode(){
-            //Implement automatated trading functionality w/ ability to run custom strategies on chosen pairings
-        }
-
+            console.log(' You have selected COSSbot Automated trading mode.\n');
+            var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth for COSSbot to trade on:  ');
+            var curArray = pairSelected.split("-")
+            var currencyName = curArray[0]
+            console.log('In order to protect user funds, COSSbot requires a parameter of order size. \nThis will prevent COSSbot from making buy/sell orders larger than the specified size.\n')
+            var orderSize = readlineSync.question('What is the maximimum order size you want COSSbot to make in units of '+ currencyName+ ':  ') 
+            
+            //implement automated trading strategy here
 
         } else if (tradingMode === 'q'){
             //implemented user selection q to exit code
