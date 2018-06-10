@@ -10,13 +10,16 @@ const main = async () => {
     const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
    
-    
-    const child = require('child_process').fork('./Server', [], { silent: true });
-    
+    function postMessage(message){
     var request = new XMLHttpRequest();
     request.open("POST", "http://localhost:8080")
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    request.send("test message")
+    request.send(message)
+    }
+    const child = require('child_process').fork('./Server', [], { silent: true });
+
+    
+    postMessage("test message")
 
     console.log('COSSbot initializing...');
     console.log('');
