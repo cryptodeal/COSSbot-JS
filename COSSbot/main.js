@@ -12,6 +12,11 @@ const main = async () => {
    
     
     const child = require('child_process').fork('./Server', [], { silent: true });
+    
+    var request = new XMLHttpRequest();
+    request.open("POST", "http://localhost:8080")
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    request.send("test message")
 
     console.log('COSSbot initializing...');
     console.log('');
