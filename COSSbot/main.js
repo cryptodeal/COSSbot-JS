@@ -9,7 +9,8 @@ var data1
 const main = async () => {
     const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
-   
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    
     function postMessage(message){
     var request = new XMLHttpRequest();
     request.open("POST", "http://localhost:8080")
