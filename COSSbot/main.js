@@ -11,11 +11,15 @@ const main = async () => {
     const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
 
+
     function postMessage(message){
-    var request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:8080")
-    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    request.send(message)
+		var payload = { 'sender' : 'COSSbot',
+				'msg'	 : message
+			}
+		var request = new XMLHttpRequest();
+		request.open("POST", "http://localhost:8080")
+		request.setRequestHeader("Content-Type", "application/json")
+		request.send(JSON.stringify(payload))
     }
     
     const child = require('child_process').fork('./Server', [], { silent: true });
@@ -23,23 +27,17 @@ const main = async () => {
     
     postMessage("test message")
 
+
     console.log('COSSbot initializing...');
-    postMessage("COSSbot initializing...\n\n")
     console.log('');
     console.log('');
     console.log('Please follow these steps: ');
-    postMessage("Please follow these steps:\n")
     console.log('  ');
     console.log('1. Open session of google chrome. ');
-    postMessage("1. Open session of google chrome. ")
     console.log('2. Log into coss.io.');
-    postMessage("2. Log into coss.io.")
     console.log('3. Select the exchange tab once you have logged in.');
-    postMessage("3. Select the exchange tab once you have logged in.")
     console.log('4. Once you are on the Coss.io Exchange tab, please click on the COSSbot Validator chrome extension.');
-    postMessage("4. Once you are on the Coss.io Exchange tab, please click on the COSSbot Validator chrome extension.")
     
-  
     child.on('message', function(msg) {
         cookie = JSON.stringify(msg);
         didUpdateCookie(cookie);
@@ -47,8 +45,8 @@ const main = async () => {
     async function didUpdateCookie() { //function wraps the remainder of the bot so that data1, data2, and data3 are accessible to the bot for validation
        
         //console.log(cookie);
-        console.log('COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------')
-        postMessage("COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------")
+        console.log('COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------') 
+	postMessage('COSSbot successfully received validation data... \n -----------Testing connection to coss.io -----------')
         var array = cookie.split(",");
         data1 = array[0];
 		data1 = data1.replace(/['"]+/g, '')
