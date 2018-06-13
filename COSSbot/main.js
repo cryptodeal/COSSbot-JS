@@ -13,9 +13,9 @@ const main = async () => {
 
 
     function postMessage(message){
-		var payload = { 'sender' : 'COSSbot',
-				'msg'	 : message
-			}
+		var payload = {
+			'sender' : 'COSSbot',
+			'msg'	 : message }
 		var request = new XMLHttpRequest();
 		request.open("POST", "http://localhost:8080")
 		request.setRequestHeader("Content-Type", "application/json")
