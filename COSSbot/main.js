@@ -70,13 +70,15 @@ try {
     //2- need the above creation of const cossIO to have occurred prior to the below creation of const session
         const session = await cossIO.requestSession(); //now getting an error here saying that reference error, unexpected identifier cossIO
         console.log('Session:', session);
+		postMessage('Session:')
+		postMessage(JSON.stringify(session));
         //SpecialPost below copy/paste as needed
         var specialPost = new XMLHttpRequest();
         specialPost.open("POST", "http://localhost:4000/data1");
         specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         specialPost.send("Session:", session)
         console.log('---------------------------------');
-        postMessage("---------------------------------")
+        postMessage('---------------------------------')
 
         //3- NEED THE BELOW LISTENER TO WAIT UNTIL SESSION HAS BEEN DECLARED PRIOR TO PROMPTING THE USER FOR INPUT
         //implement listener so Command Line waits for user to pres m, a, or q and then enter to set value to tradingMode variable.
