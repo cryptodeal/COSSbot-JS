@@ -12,10 +12,11 @@ const main = async () => {
     var readlineSync = require('readline-sync')
 
 
-    function postMessage(message){
+    function postMessage(message, id=-1){
 		var payload = {
 			'sender' : 'COSSbot',
-			'msg'	 : message }
+			'msg'	 : message, 
+			'msg_id' : '' + id}
 		var request = new XMLHttpRequest();
 		request.open("POST", "http://localhost:8080")
 		request.setRequestHeader("Content-Type", "application/json")
@@ -462,4 +463,3 @@ try {
 };
 
 main();
-
