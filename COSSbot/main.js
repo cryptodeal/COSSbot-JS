@@ -198,217 +198,212 @@ try {
 						specialPost.send("First Bid", depth.bids[0])
 						sellPrice = depth.bids[0].price
 				   		var amount = readlineSync.question('Please enter the amount you want to sell:  ');
-				    if (depth.bids[0].volume >= amount)
-				    {
-				      try {
-					const placedOrder = await cossIO.placeOrder({
-					symbol: pairSelected,
-					side: CossIOLib.CossIOOrderSide.SELL,
-					type: CossIOLib.CossIOOrderType.LIMIT,
-					price: buyPrice,
-					amount: amount,
-					session,
-					});
-					console.log('Placed Order:', placedOrder);
-					var specialPost = new XMLHttpRequest();
-					specialPost.open("POST", "http://localhost:4000/data1");
-					specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-					specialPost.send("Placed Order:", placedOrder)
-					console.log('---------------------------------');
-					postMessage("---------------------------------")
-				    } catch (error) {
-					console.error('Failed to place market sell order...', error);
-				    }
-				}
-				else {
-				    console.log('You are attempting to attempting to sell more than the volume of the best bid. \n Please try again...')
-				    postMessage("You are attempting to attempting to sell more than the volume of the best bid. \n Please try again...")
-				}
-				}    
+				    		if (depth.bids[0].volume >= amount){
+				      			try {
+								const placedOrder = await cossIO.placeOrder({
+									symbol: pairSelected,
+									side: CossIOLib.CossIOOrderSide.SELL,
+									type: CossIOLib.CossIOOrderType.LIMIT,
+									price: buyPrice,
+									amount: amount,
+									session,
+								});
+								console.log('Placed Order:', placedOrder);
+								var specialPost = new XMLHttpRequest();
+								specialPost.open("POST", "http://localhost:4000/data1");
+								specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+								specialPost.send("Placed Order:", placedOrder)
+								console.log('---------------------------------');
+								postMessage("---------------------------------")
+				    			} catch (error) {
+								console.error('Failed to place market sell order...', error);
+				   			}
+						} else {
+				  			console.log('You are attempting to attempting to sell more than the volume of the best bid. \n Please try again...')
+				    			postMessage("You are attempting to attempting to sell more than the volume of the best bid. \n Please try again...")
+						}
+					}    
 
 
 
 			    //gets all market pairs & the corresponding data     
-			    } else if (manualCommand === '7') {
-				try {
-				    const marketPairs = await api.marketPairs();
-				    console.log('Market Pairs', marketPairs);
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("Market Pairs", marketPairs)
-				} catch(error) {
-				    console.error('Failed to request market pairs', error);
-				}
-
-
-			    //gets and cancels first order for pair 
-			    } else if (manualCommand === '4') {
-				var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-				try {
-				    const userOrders = await cossIO.requestUserOrders({ symbol: pairSelected });
-				    if (userOrders && userOrders.length > 0) {
-				      console.log('User Orders:', userOrders);
-				      var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("User Orders:", userOrders)
-				      const firstOrder = userOrders[0];
-				      console.log('Cancel first Order:', firstOrder);
-				      var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("Cancel first Order:", firstOrder)
-
-				      await cossIO.cancelOrder({ order: firstOrder });
-				    }
-				    console.log('---------------------------------');
-				    postMessage("---------------------------------")
-				  } catch (error) {
-				    console.error('Failed to request user orders', error);
-				  }
-
-			    //gets and returns all order history for a specified pair
-				} else if (manualCommand === '6') {
-				    var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-				    try {
-					const orderHistory = await cossIO.requestOrderHistory({ symbol: pairSelected });
-					console.log('Order History:', orderHistory);
-					var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("Order History:", orderHistory)
-					console.log('---------------------------------');
-					postMessage("---------------------------------")
-					} catch (error) {
-					console.error('Failed to request order history', error);
+			    	} else if (manualCommand === '7') {
+					try {
+					    const marketPairs = await api.marketPairs();
+					    console.log('Market Pairs', marketPairs);
+					    var specialPost = new XMLHttpRequest();
+					    specialPost.open("POST", "http://localhost:4000/data1");
+					    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					    specialPost.send("Market Pairs", marketPairs)
+					} catch(error) {
+					    console.error('Failed to request market pairs', error);
 					}
 
 
-			    //gets all user balances
-			    //TODO: get user balances above a certain threshold (so not spammed w 0 values)
-			    }else if (manualCommand === '1') {
-				try {
-				    const userWallets = await cossIO.requestUserWallets();
-				    console.log('User Wallet Balances:');
-				    postMessage("User Wallet Balances:")
-				    for (const wallet of userWallets) {
-				    console.log(
-				    `- '${wallet.currencyDisplayLabel} (${
-				    wallet.currencyCode
-				    })' :  ${wallet.availableBalance.toFixed(8)}`,
-				    );
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send(
-					`- '${wallet.currencyDisplayLabel} (${
-					wallet.currencyCode
-					})' :  ${wallet.availableBalance.toFixed(8)}`,
-					);
-				}
-				} catch(error) {
-				    console.error('Failed to get account balance', error);
-				}
+			   	//gets and cancels first order for pair 
+			    	} else if (manualCommand === '4') {
+					var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+					try {
+				    		const userOrders = await cossIO.requestUserOrders({ symbol: pairSelected });
+				    		if (userOrders && userOrders.length > 0) {
+				      			console.log('User Orders:', userOrders);
+				      			var specialPost = new XMLHttpRequest();
+				   			specialPost.open("POST", "http://localhost:4000/data1");
+							specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+							specialPost.send("User Orders:", userOrders)
+				      			const firstOrder = userOrders[0];
+				     			console.log('Cancel first Order:', firstOrder);
+				    			var specialPost = new XMLHttpRequest();
+				   			specialPost.open("POST", "http://localhost:4000/data1");
+					    		specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				  			specialPost.send("Cancel first Order:", firstOrder)
+
+				     			await cossIO.cancelOrder({ order: firstOrder });
+				    		}
+						console.log('---------------------------------');
+						postMessage("---------------------------------")
+					} catch (error) {
+						console.error('Failed to request user orders', error);
+					}
+
+			   	//gets and returns all order history for a specified pair
+				} else if (manualCommand === '6') {
+					var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+					try {
+						const orderHistory = await cossIO.requestOrderHistory({ symbol: pairSelected });
+						console.log('Order History:', orderHistory);
+						var specialPost = new XMLHttpRequest();
+						specialPost.open("POST", "http://localhost:4000/data1");
+						 specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+						 specialPost.send("Order History:", orderHistory)
+						console.log('---------------------------------');
+						postMessage("---------------------------------")
+					} catch (error) {
+						console.error('Failed to request order history', error);
+					}
 
 
-			    // place  buy
-			    }else if (manualCommand === '2'){
-				console.log('You have selected to place a buy order....')
-				postMessage("You have selected to place a buy order....")
-				console.log('----------------------------------------------');
-				postMessage("----------------------------------------------")
-				var buyType = readlineSync.question('Would you like to place a limit buy (1) or market buy (2):  ');
-				if (buyType === '1'){
-				console.log('You have selected to place a limit buy...');
-				postMessage("You have selected to place a limit buy...")
-				console.log('-----------------------------------------------');
-				postMessage("-----------------------------------------------")
-				var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-				var buyPrice = readlineSync.question('Please enter the price of your bid price in (pairing, e.g. ETH/BTC/FIAT):  ');
-				var amount = readlineSync.question('Please enter the amount you want to buy:  ');
-				  try {
-				    const placedOrder = await cossIO.placeOrder({
-				    symbol: pairSelected,
-				    side: CossIOLib.CossIOOrderSide.BUY,
-				    type: CossIOLib.CossIOOrderType.LIMIT,
-				    price: buyPrice,
-				    amount: amount,
-				    session,
-				    });
-				    console.log('Placed Order:', placedOrder);
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("Placed Order:", placedOrder)
-				    postMessage("---------------------------------")
-				    console.log('---------------------------------');
-				} catch (error) {
-				    console.error('Failed to place limit buy order...', error);
-				}
-				}
-				else if (buyType === '2'){
-				console.log('You have selected to place a market buy...');
-				postMessage("You have selected to place a market buy...")
-				console.log('----------------------------------------------- \n');
-				postMessage("----------------------------------------------- \n")
-				var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-				    const depth = await cossIO.requestDepth({ symbol: pairSelected });
-				    console.log('First Ask', depth.asks[0]);
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("First Ask", depth.asks[0])
-				    buyPrice = depth.asks[0].price
-				var amount = readlineSync.question('Please enter the amount you want to buy:  ');
-				if (depth.asks[0].volume >= amount)
-				{
-				  try {
-				    const placedOrder = await cossIO.placeOrder({
-				    symbol: pairSelected,
-				    side: CossIOLib.CossIOOrderSide.BUY,
-				    type: CossIOLib.CossIOOrderType.LIMIT,
-				    price: buyPrice,
-				    amount: amount,
-				    session,
-				    });
-				    console.log('Placed Order:', placedOrder);
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("Placed Order:", placedOrder)
-				    console.log('---------------------------------');
-				    postMessage("---------------------------------")
-				} catch (error) {
-				    console.error('Failed to place market buy order...', error);
-				}
-			    }
-			    else {
-				console.log('You are attempting to attempting to buy more than the volume of the best ask. \n Please try again...')
-				postMessage("You are attempting to attempting to buy more than the volume of the best ask. \n Please try again...")
-			    }
-				}
-			    } else if (manualCommand === '8'){
-				var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
-				try {
-				    const tickerPairSelected = await cossIO.requestTicker({ symbol: pairSelected });
-				    console.log('Ticker: ', pairSelected);
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send("Ticker: ", pairSelected)
-				    console.log(`Current Price: '${tickerPairSelected.price.toFixed(8)}'`);
-				    var specialPost = new XMLHttpRequest();
-				    specialPost.open("POST", "http://localhost:4000/data1");
-				    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				    specialPost.send(`Current Price: '${tickerPairSelected.price.toFixed(8)}'`)
-				    console.log('---------------------------------\n');
-				    postMessage("---------------------------------\n")
+			    	//gets all user balances
+			       	//TODO: get user balances above a certain threshold (so not spammed w 0 values)
+			    	}else if (manualCommand === '1') {
+					try {
+				   		const userWallets = await cossIO.requestUserWallets();
+				    		console.log('User Wallet Balances:');
+				    		postMessage("User Wallet Balances:")
+				    		for (const wallet of userWallets) {
+				    			console.log(
+				    				`- '${wallet.currencyDisplayLabel} (${
+				   				 wallet.currencyCode
+				    				})' :  ${wallet.availableBalance.toFixed(8)}`,
+				    			);
+							var specialPost = new XMLHttpRequest();
+							specialPost.open("POST", "http://localhost:4000/data1");
+							specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+							specialPost.send(
+								`- '${wallet.currencyDisplayLabel} (${
+								wallet.currencyCode
+								})' :  ${wallet.availableBalance.toFixed(8)}`,
+							);
+						}
+					} catch(error) {
+				    		console.error('Failed to get account balance', error);
+					}
 
 
-				  } catch (error) {
-				    console.error('Failed to request ticker', error);
-				  }
+			    	// place  buy
+			    	}else if (manualCommand === '2'){
+					console.log('You have selected to place a buy order....')
+					postMessage("You have selected to place a buy order....")
+					console.log('----------------------------------------------');
+					postMessage("----------------------------------------------")
+					var buyType = readlineSync.question('Would you like to place a limit buy (1) or market buy (2):  ');
+					if (buyType === '1'){
+						console.log('You have selected to place a limit buy...');
+						postMessage("You have selected to place a limit buy...")
+						console.log('-----------------------------------------------');
+						postMessage("-----------------------------------------------")
+						var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+						var buyPrice = readlineSync.question('Please enter the price of your bid price in (pairing, e.g. ETH/BTC/FIAT):  ');
+						var amount = readlineSync.question('Please enter the amount you want to buy:  ');
+				  		try {
+				   			const placedOrder = await cossIO.placeOrder({
+								symbol: pairSelected,
+								side: CossIOLib.CossIOOrderSide.BUY,
+								type: CossIOLib.CossIOOrderType.LIMIT,
+								price: buyPrice,
+								amount: amount,
+								session,
+				    			});
+							console.log('Placed Order:', placedOrder);
+						    	var specialPost = new XMLHttpRequest();
+						   	specialPost.open("POST", "http://localhost:4000/data1");
+						   	specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+						   	specialPost.send("Placed Order:", placedOrder)
+						    	postMessage("---------------------------------")
+						    	console.log('---------------------------------');
+						} catch (error) {
+				    			console.error('Failed to place limit buy order...', error);
+						}
+					}else if (buyType === '2'){
+						console.log('You have selected to place a market buy...');
+						postMessage("You have selected to place a market buy...")
+						console.log('----------------------------------------------- \n');
+						postMessage("----------------------------------------------- \n")
+						var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+				   		const depth = await cossIO.requestDepth({ symbol: pairSelected });
+				   		console.log('First Ask', depth.asks[0]);
+				    		var specialPost = new XMLHttpRequest();
+				    		specialPost.open("POST", "http://localhost:4000/data1");
+				    		specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				    		specialPost.send("First Ask", depth.asks[0])
+				    		buyPrice = depth.asks[0].price
+						var amount = readlineSync.question('Please enter the amount you want to buy:  ');
+						if (depth.asks[0].volume >= amount){
+				  			try {
+				    				const placedOrder = await cossIO.placeOrder({
+									symbol: pairSelected,
+								    	side: CossIOLib.CossIOOrderSide.BUY,
+								   	type: CossIOLib.CossIOOrderType.LIMIT,
+								   	price: buyPrice,
+								   	amount: amount,
+									session,
+								});
+							    console.log('Placed Order:', placedOrder);
+							    var specialPost = new XMLHttpRequest();
+							    specialPost.open("POST", "http://localhost:4000/data1");
+							    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+							    specialPost.send("Placed Order:", placedOrder)
+							    console.log('---------------------------------');
+							    postMessage("---------------------------------")
+							} catch (error) {
+							    console.error('Failed to place market buy order...', error);
+							}
+			   			}else {
+							console.log('You are attempting to attempting to buy more than the volume of the best ask. \n Please try again...')
+							postMessage("You are attempting to attempting to buy more than the volume of the best ask. \n Please try again...")
+			    			}
+					}
+			  	  } else if (manualCommand === '8'){
+					var pairSelected = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ');
+					try {
+				    		const tickerPairSelected = await cossIO.requestTicker({ symbol: pairSelected });
+						    console.log('Ticker: ', pairSelected);
+						    var specialPost = new XMLHttpRequest();
+						    specialPost.open("POST", "http://localhost:4000/data1");
+						    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+						    specialPost.send("Ticker: ", pairSelected)
+						    console.log(`Current Price: '${tickerPairSelected.price.toFixed(8)}'`);
+						    var specialPost = new XMLHttpRequest();
+						    specialPost.open("POST", "http://localhost:4000/data1");
+						    specialPost.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+						    specialPost.send(`Current Price: '${tickerPairSelected.price.toFixed(8)}'`)
+						    console.log('---------------------------------\n');
+						    postMessage("---------------------------------\n")
+
+
+					} catch (error) {
+						console.error('Failed to request ticker', error);
+					}
 
 			    } else if (manualCommand === '9'){
 				try {
