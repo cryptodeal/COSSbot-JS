@@ -1,10 +1,10 @@
 const CossIOLib = require('./../lib'); //these need to be usable from below
 const cossAPI = require('./coss-api'); //these need to be usable from below
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var cookie
-var data1 
-         var data2 
-         var data3 
+var cookie;
+var data1;
+var data2;
+var data3;
 
 var WebGUI_connected = false; // flag for sending HTTP requests to web GUI
 const main = async () => {
@@ -13,6 +13,7 @@ const main = async () => {
 
 
     function postMessage(message, id=-1){
+	    if(id == -2 || WebGUI_connected){
 		var payload = {
 			'sender' : 'COSSbot',
 			'msg'	 : message, 
@@ -27,19 +28,19 @@ const main = async () => {
 				}
 			}
 		}
-		request.send(JSON.stringify(payload))
+		request.send(JSON.stringify(payload));
+	    }
     }
     
     const child = require('child_process').fork('./Server', [], { silent: true });
 
-    postMessage('COSSbot initializing...', -9)
-
+    postMessage('COSSbot initializing...', -9);
 
     console.log('COSSbot initializing...');
     console.log('');
     console.log('');
     console.log('Please follow these steps: ');
-    console.log('  ');
+    console.log(' ');
     console.log('1. Open session of google chrome. ');
     console.log('2. Log into coss.io.');
     console.log('3. Select the exchange tab once you have logged in.');
@@ -53,20 +54,19 @@ const main = async () => {
     });
     async function didUpdateCookie() { //function wraps the remainder of the bot so that data1, data2, and data3 are accessible to the bot for validation
        
-        //console.log(cookie);
+        
         console.log('COSSbot successfully received validation data...' + '\n' + '-----------Testing connection to coss.io -----------') 
-	postMessage('COSSbot successfully received validation data... \n -----------Testing connection to coss.io -----------')
+	postMessage('COSSbot successfully received validation data...');
+	postMessage('-----------Testing connection to coss.io -----------');
+	    
         var array = cookie.split(",");
+	    
         data1 = array[0];
-		data1 = data1.replace(/['"]+/g, '')
+	data1 = data1.replace(/['"]+/g, '')
         data2 = array[1];
 		 
         data3 = array[2];
-		data3 = data3.replace(/['"]+/g, '')
-		 
-         //console.log(data1) //these 3 values need to be accessible from the processes below aka the trading portion
-         //console.log(data2)
-         //console.log(data3)
+	data3 = data3.replace(/['"]+/g, '')
     
 //1- need bot to wait for the values of data1, data2, and data3 to have been parsed above before executing this try        
 try {
@@ -79,8 +79,8 @@ try {
     //2- need the above creation of const cossIO to have occurred prior to the below creation of const session
         const session = await cossIO.requestSession(); //now getting an error here saying that reference error, unexpected identifier cossIO
         console.log('Session:', session);
-		postMessage('Session:')
-		postMessage(JSON.stringify(session));
+	postMessage('Session:')
+	postMessage(JSON.stringify(session));
         //SpecialPost below copy/paste as needed
         var specialPost = new XMLHttpRequest();
         specialPost.open("POST", "http://localhost:4000/data1");
