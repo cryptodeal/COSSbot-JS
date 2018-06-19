@@ -6,7 +6,7 @@ var data1
          var data2 
          var data3 
 
-
+var WebGUI_connected = false; // flag for sending HTTP requests to web GUI
 const main = async () => {
     const api = cossAPI(); //these need to be usable from the trading portion of below
     var readlineSync = require('readline-sync')
@@ -18,15 +18,21 @@ const main = async () => {
 			'msg'	 : message, 
 			'msg_id' : '' + id}
 		var request = new XMLHttpRequest();
-		request.open("POST", "http://localhost:8080")
-		request.setRequestHeader("Content-Type", "application/json")
+		request.open("POST", "http://localhost:8080/consoleMsg", false)
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+	    	if(id == -9){ // initialization message
+			request.onload = function() {
+				if(request.status == 200){ // successfully pinged web GUI
+					WebGUI_connected = true; //set flag true for sending messages to web GUI
+				}
+			}
+		}
 		request.send(JSON.stringify(payload))
     }
     
     const child = require('child_process').fork('./Server', [], { silent: true });
 
-    
-    postMessage("test message")
+    postMessage('COSSbot initializing...', -9)
 
 
     console.log('COSSbot initializing...');
@@ -39,6 +45,8 @@ const main = async () => {
     console.log('3. Select the exchange tab once you have logged in.');
     console.log('4. Once you are on the Coss.io Exchange tab, please click on the COSSbot Validator chrome extension.');
     
+    postMessage('COSSbot initializing...')	
+	
     child.on('message', function(msg) {
         cookie = JSON.stringify(msg);
         didUpdateCookie(cookie);
