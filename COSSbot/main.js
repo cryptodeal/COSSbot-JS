@@ -430,13 +430,27 @@ try {
 
 
         } if (tradingMode === 'a') {
-         
+
             function automatedTrading(){
-                var p4 = 'coss-eth' 
-				var p5 = 20 // number of COSS bought at each purchase (for both initial and averaging down)
-				var p6 = '' 
-				var p7 = 0.00000250 // distance between each averagedown **in ETH**
-				var p8 = 0.00000150 // distance above costaverage to take profit **in ETH**
+                console.log(' You have selected COSSbot Automated trading mode.\n');
+                console.log('The bot will execute trades using the following strategy: \n1. Place a market buy of specified order size \n2. If the market rises, COSSbot will take profit at the user specified percent \n3. If the market dips, COSSbot will cost average your purchase price down by buying at user specified percent price decrease. \n4. The bot will cost average down and hold accumulated funds until it can take profit at a specified percent above average purchase price. \n5. Once the bot has taken profit the automated strategy will restart from step 1.' )
+                console.log('--------------------------------------------------------\n')
+                var p4 = readlineSync.question('Enter a pairing (currency-pairing) e.g. coss-eth:  ') 
+                var curArray = p4.split("-")
+                var currencyName = curArray[0]
+                var pairingName = curArray[1]
+                console.log('\nIn order to protect user funds, COSSbot requires a parameter of order size. \nThis will prevent COSSbot from making buy/sell orders larger than the specified size. \nNote: User must ensure that they have adequate funds in' + pairingName + ' balance so that COSSbot can make purchases.')
+				var p5 = readlineSync.questionFloat('What is the order size you want COSSbot to make in units of '+ currencyName+ ':  ') // number of COSS bought at each purchase (for both initial and averaging down)
+                var p6 = '' 
+                var price = readlineSync.questionFloat('Please enter the current price of '+ currencyName+ ' in '+ pairingName+': ')
+                var profitPercent = readlineSync.questionFloat('At what percent would you like COSSbot to take profit (please enter as a percent, e.g. 5, 10, or 4.25, do not include % sign): ')
+                var takeProfitPercent = (profitPercent/100)
+                var priceDrop = readlineSync.questionFloat('At what percent would you like COSSbot to take cost average down? (please enter as a percent, e.g. 5, 10, or 4.25, do not include % sign): ')
+                var priceDropPercent = (priceDrop/100)
+                var priceDropNum = (priceDropPercent*price)
+                var takeProfitNum = (takeProfitPercent*price)
+                var p7 = priceDropNum.toFixed(8) // distance between each averagedown **in ETH**
+                var p8 = takeProfitNum.toFixed(8) // distance above costaverage to take profit **in ETH**
             strat.setconfig(data1,data3,data2,p4,p5,p6,p7,p8)
             automatedsetup = true;
             }
