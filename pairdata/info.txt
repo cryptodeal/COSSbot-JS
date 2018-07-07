@@ -1,0 +1,1 @@
+The folder 'pairdata' must exist in order for the bot to save pair trading history to it. This file is a placeholder to ensure that the folder exists.
