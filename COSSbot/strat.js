@@ -1,5 +1,6 @@
 const CossIOLib = require('./../lib');
 const cossAPI = require('./coss-api');
+var fs = require('fs');
 var symbols = []
 var cryptos = []
 var exchange = []
@@ -142,7 +143,22 @@ try {
 		main();
       } catch (error) {
         console.error('Failed to request ticker', error);
-      }
+	  }
+
+	  fs.stat(__dirname + '/../pairdata/'+rpair+'.json', function(err, stat) {
+		if(err == null) {
+		  fs.readFile(__dirname + '/../pairdata/'+rpair+'.json', (err, data) => {
+			if (err) throw err;
+			agprices = JSON.parse(data);
+			console.log('agprices: ' + agprices)
+		  });
+		} else if(err.code == 'ENOENT') {
+			// file does not exist
+			console.log('No pair data found, bot will start without utilizing prior data.')
+		} 
+	  });
+	  
+
 }
 
 
@@ -298,10 +314,7 @@ const tradinglogic = async (sbl,session,cossIO) => {
 						
 						if(agprices[o][0] - rtreshold > base[exchange[0]][sbl]['ask'] && base[exchange[0]][sbl]['lotsize'] <= base[exchange[0]][sbl]['avolume'] )
 						{
-							console.log('order info: ')
 							try{
-								console.log(sbl,base[exchange[0]][sbl]['ask'],base[exchange[0]][sbl]['lotsize'])
-                        		console.log(session)
 									const placedOrder = await cossIO.placeOrder({
 									symbol: sbl,
 									side: CossIOLib.CossIOOrderSide.BUY,
@@ -311,6 +324,12 @@ const tradinglogic = async (sbl,session,cossIO) => {
 									session,
 									});
 									agprices.push([base[exchange[0]][sbl]['ask'],base[exchange[0]][sbl]['lotsize']])
+									//TODO: Write agprices to sbl.json file here
+									var json = JSON.stringify(agprices)
+									fs.writeFile(__dirname + '/../pairdata/'+rpair+'.json', json, (err) => {
+										if (err) throw err;
+										console.log('The file '+ rpair +'.json has been saved!');
+									  });
 									console.log(agprices)
 									console.log('Averaging down: ', placedOrder);
 								}catch (error) {
@@ -319,10 +338,7 @@ const tradinglogic = async (sbl,session,cossIO) => {
 						}
 						if(crpr < base[exchange[0]][sbl]['bid']- rtp  && base[exchange[0]][sbl]['lotsize'] <= base[exchange[0]][sbl]['bvolume'])
 						{
-						console.log('order info: ')
 						try{
-							console.log(sbl,base[exchange[0]][sbl]['bid'],base[exchange[0]][sbl]['lotsize'])
-                        	console.log(session)
 									const placedOrder = await cossIO.placeOrder({
 									symbol: sbl,
 									side: CossIOLib.CossIOOrderSide.SELL,
@@ -338,7 +354,13 @@ const tradinglogic = async (sbl,session,cossIO) => {
                                     if(totalvol - base[exchange[0]][sbl]['lotsize'] <= 0)
                                     {
                                     agprices = [[0,0]]
-                                    }
+									}
+									//TODO: Write agprices to sbl.json file here
+									var json = JSON.stringify(agprices)
+									fs.writeFile(__dirname + '/../pairdata/'+rpair+'.json', json, (err) => {
+										if (err) throw err;
+										console.log('The file '+ rpair +'.json has been saved!');
+									  });
                                     console.log(agprices)
                                     console.log('Taken profit: ', placedOrder);
 									
@@ -349,10 +371,7 @@ const tradinglogic = async (sbl,session,cossIO) => {
 					}}
 					if(agprices[0][0] == 0 && agprices[0][1] == 0)
 					{
-						console.log('order info: ')
 						try{
-						console.log(sbl,base[exchange[0]][sbl]['ask'],base[exchange[0]][sbl]['lotsize'])
-                        console.log(session)
 						const placedOrder = await cossIO.placeOrder({
          				symbol: sbl,
          				side: CossIOLib.CossIOOrderSide.BUY,
@@ -362,6 +381,12 @@ const tradinglogic = async (sbl,session,cossIO) => {
          				session,
 						});
 						agprices = [[base[exchange[0]][sbl]['ask'],base[exchange[0]][sbl]['lotsize']]]
+						//TODO: Write agprices to sbl.json file here
+						var json = JSON.stringify(agprices)
+							fs.writeFile(__dirname + '/../pairdata/'+rpair+'.json', json, (err) => {
+								if (err) throw err;
+								console.log('The file '+ rpair +'.json has been saved!');
+							});
 						console.log('Placed Order:', placedOrder);
 						console.log('log: ',agprices)
 					}catch (error) {

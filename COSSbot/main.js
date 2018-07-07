@@ -439,13 +439,13 @@ try {
                 var curArray = p4.split("-")
                 var currencyName = curArray[0]
                 var pairingName = curArray[1]
-                console.log('\nIn order to protect user funds, COSSbot requires a parameter of order size. \nThis will prevent COSSbot from making buy/sell orders larger than the specified size. \nNote: User must ensure that they have adequate funds in' + pairingName + ' balance so that COSSbot can make purchases.')
+                console.log('\nIn order to protect user funds, COSSbot requires a parameter of order size. \nThis will prevent COSSbot from making buy/sell orders larger than the specified size. \nNote: User must ensure that they have adequate funds in ' + pairingName + ' balance so that COSSbot can make purchases.')
 				var p5 = readlineSync.questionFloat('What is the order size you want COSSbot to make in units of '+ currencyName+ ':  ') // number of COSS bought at each purchase (for both initial and averaging down)
                 var p6 = '' 
                 var price = readlineSync.questionFloat('Please enter the current price of '+ currencyName+ ' in '+ pairingName+': ')
-                var profitPercent = readlineSync.questionFloat('At what percent would you like COSSbot to take profit (please enter as a percent, e.g. 5, 10, or 4.25, do not include % sign): ')
+                var profitPercent = readlineSync.questionFloat('At what percent would you like COSSbot to take profit (please enter as a percent, e.g. .5, 1, 5.25, do not include % sign): ')
                 var takeProfitPercent = (profitPercent/100)
-                var priceDrop = readlineSync.questionFloat('At what percent would you like COSSbot to take cost average down? (please enter as a percent, e.g. 5, 10, or 4.25, do not include % sign): ')
+                var priceDrop = readlineSync.questionFloat('At what percent would you like COSSbot to take cost average down? (please enter as a percent, e.g. .25, .75, 1, 5.25, do not include % sign): ')
                 var priceDropPercent = (priceDrop/100)
                 var priceDropNum = (priceDropPercent*price)
                 var takeProfitNum = (takeProfitPercent*price)
