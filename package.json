@@ -52,7 +52,8 @@
     "synchronize": "^2.0.0",
     "util": "0.10.3",
     "xmlhttprequest": "1.8.0",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "csv-stringify": "3.1.1"
   },
   "directories": {
     "lib": "lib"
