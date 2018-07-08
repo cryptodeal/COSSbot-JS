@@ -314,7 +314,10 @@ const tradinglogic = async (sbl,session,cossIO) => {
 						
 						if(agprices[o][0] - rtreshold > base[exchange[0]][sbl]['ask'] && base[exchange[0]][sbl]['lotsize'] <= base[exchange[0]][sbl]['avolume'] )
 						{
+							console.log('order info: ')
 							try{
+								console.log(sbl,base[exchange[0]][sbl]['ask'],base[exchange[0]][sbl]['lotsize'])
+                        		console.log(session)
 									const placedOrder = await cossIO.placeOrder({
 									symbol: sbl,
 									side: CossIOLib.CossIOOrderSide.BUY,
@@ -338,7 +341,10 @@ const tradinglogic = async (sbl,session,cossIO) => {
 						}
 						if(crpr < base[exchange[0]][sbl]['bid']- rtp  && base[exchange[0]][sbl]['lotsize'] <= base[exchange[0]][sbl]['bvolume'])
 						{
+							console.log('order info: ')
 						try{
+							console.log(sbl,base[exchange[0]][sbl]['bid'],base[exchange[0]][sbl]['lotsize'])
+                        	console.log(session)
 									const placedOrder = await cossIO.placeOrder({
 									symbol: sbl,
 									side: CossIOLib.CossIOOrderSide.SELL,
@@ -371,7 +377,10 @@ const tradinglogic = async (sbl,session,cossIO) => {
 					}}
 					if(agprices[0][0] == 0 && agprices[0][1] == 0)
 					{
+						console.log('order info: ')
 						try{
+						console.log(sbl,base[exchange[0]][sbl]['ask'],base[exchange[0]][sbl]['lotsize'])
+                        console.log(session)
 						const placedOrder = await cossIO.placeOrder({
          				symbol: sbl,
          				side: CossIOLib.CossIOOrderSide.BUY,
