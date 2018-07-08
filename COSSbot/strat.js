@@ -161,9 +161,9 @@ try {
 		} 
 	  });
 	  
-	fs.stat(__dirname + '/../orderdata/'+rpair+'.json', function(err, stat) {
+	fs.stat(__dirname + '/../orderdata/backups/orders:'+rpair+'.json', function(err, stat) {
 		if(err == null) {
-		  fs.readFile(__dirname + '/../orderdata/'+rpair+'.json', (err, data) => {
+		  fs.readFile(__dirname + '/../orderdata/backups/orders:'+rpair+'.json', (err, data) => {
 			if (err) throw err;
 			var orderHistory = JSON.parse(data);
 			console.log('userOrders: ' + orderHistory)
@@ -353,7 +353,7 @@ const tradinglogic = async (sbl,session,cossIO) => {
 									console.log('Averaging down: ', placedOrder);
 									orderHistory[orderHistory.length] = new Array(rpair, 'buy', base[exchange[0]][sbl]['lotsize'], base[exchange[0]][sbl]['ask'])
 									jsonOrders = JSON.stringify(orderHistory);
-									fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.json', jsonOrders, (err) => {
+									fs.writeFile(__dirname + '/../orderdata/backups/orders:'+rpair+'.json', jsonOrders, (err) => {
 										if (err) throw err;
 									  });
 									stringify(orderHistory, function(err, output){
@@ -399,7 +399,7 @@ const tradinglogic = async (sbl,session,cossIO) => {
 									console.log('Taken profit: ', placedOrder);
 									orderHistory[orderHistory.length] = new Array(rpair, 'sell', base[exchange[0]][sbl]['lotsize'], base[exchange[0]][sbl]['bid'])
 									jsonOrders = JSON.stringify(orderHistory);
-									fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.json', jsonOrders, (err) => {
+									fs.writeFile(__dirname + '/../orderdata/backups/orders:'+rpair+'.json', jsonOrders, (err) => {
 										if (err) throw err;
 									  });
 									stringify(orderHistory, function(err, output){
@@ -441,7 +441,7 @@ const tradinglogic = async (sbl,session,cossIO) => {
 						orderHistory[0] = new Array('Pair', 'Side', 'Size', 'Price')
 						orderHistory[orderHistory.length] = new Array(rpair, 'buy', base[exchange[0]][sbl]['lotsize'], base[exchange[0]][sbl]['ask'])
 						jsonOrders = JSON.stringify(orderHistory);
-						fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.json', jsonOrders, (err) => {
+						fs.writeFile(__dirname + '/../orderdata/backups/orders:'+rpair+'.json', jsonOrders, (err) => {
 							if (err) throw err;
 						  });
 						stringify(orderHistory, function(err, output){
