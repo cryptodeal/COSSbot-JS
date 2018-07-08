@@ -1,6 +1,7 @@
 const CossIOLib = require('./../lib');
 const cossAPI = require('./coss-api');
 var fs = require('fs');
+var stringify = require('csv-stringify');
 var symbols = []
 var cryptos = []
 var exchange = []
@@ -54,7 +55,7 @@ var highestsellid = []
 var pr;
 var increaseliquid = []
 var ethbtclots
-var userOrders
+var userOrders = new Array();
 var averagedown = []
 var agpreth
 var agprbtc
@@ -87,6 +88,7 @@ var highestsellID
 var lowestbuyID
 var cancelsell =false
 var cancelbuy = false
+var orderHistory = [];
 exchange[0] = 'COSS'
 base[exchange[0]] = {} 
 const getem = async () => {
@@ -97,6 +99,7 @@ try {
       xsrf: inputxsrf,
     });
 	
+
         const tickers = await cossIO.requestTickers();
         console.log('---------------------------------');
 		l = tickers.length
@@ -155,6 +158,19 @@ try {
 		} else if(err.code == 'ENOENT') {
 			// file does not exist
 			console.log('No pair data found, bot will start without utilizing prior data.')
+		} 
+	  });
+	  
+	fs.stat(__dirname + '/../orderdata/'+rpair+'.json', function(err, stat) {
+		if(err == null) {
+		  fs.readFile(__dirname + '/../orderdata/'+rpair+'.json', (err, data) => {
+			if (err) throw err;
+			var orderHistory = JSON.parse(data);
+			console.log('userOrders: ' + orderHistory)
+		  });
+		} else if(err.code == 'ENOENT') {
+			// file does not exist
+			console.log('No order history data found, bot will start a new record for '+rpair+' order history')
 		} 
 	  });
 	  
@@ -335,6 +351,18 @@ const tradinglogic = async (sbl,session,cossIO) => {
 									  });
 									console.log(agprices)
 									console.log('Averaging down: ', placedOrder);
+									orderHistory[orderHistory.length] = new Array(rpair, 'buy', base[exchange[0]][sbl]['lotsize'], base[exchange[0]][sbl]['ask'])
+									jsonOrders = JSON.stringify(orderHistory);
+									fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.json', jsonOrders, (err) => {
+										if (err) throw err;
+									  });
+									stringify(orderHistory, function(err, output){
+										fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.csv', output, (err) => {
+											if (err) throw err;
+											console.log('Order Data for '+ rpair +'.csv has been saved!');
+										  });
+										  if (err) throw err;
+									  });
 								}catch (error) {
 												console.error('Failed to place treshold buy order', error);
 												}
@@ -363,12 +391,24 @@ const tradinglogic = async (sbl,session,cossIO) => {
 									}
 									//TODO: Write agprices to sbl.json file here
 									var json = JSON.stringify(agprices)
-									fs.writeFile(__dirname + '/../pairdata/'+rpair+'.json', json, (err) => {
+									fs.writeFile(__dirname + '/../pairdata/orders:'+rpair+'.json', json, (err) => {
 										if (err) throw err;
 										console.log('The file '+ rpair +'.json has been saved!');
 									  });
                                     console.log(agprices)
-                                    console.log('Taken profit: ', placedOrder);
+									console.log('Taken profit: ', placedOrder);
+									orderHistory[orderHistory.length] = new Array(rpair, 'sell', base[exchange[0]][sbl]['lotsize'], base[exchange[0]][sbl]['bid'])
+									jsonOrders = JSON.stringify(orderHistory);
+									fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.json', jsonOrders, (err) => {
+										if (err) throw err;
+									  });
+									stringify(orderHistory, function(err, output){
+										fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.csv', output, (err) => {
+											if (err) throw err;
+											console.log('Order Data for '+ rpair +'.csv has been saved!');
+										  });
+										  if (err) throw err;
+									  });
 									
 								}catch (error) {
 												console.error('Failed to place treshold buy order', error);
@@ -398,6 +438,19 @@ const tradinglogic = async (sbl,session,cossIO) => {
 							});
 						console.log('Placed Order:', placedOrder);
 						console.log('log: ',agprices)
+						orderHistory[0] = new Array('Pair', 'Side', 'Size', 'Price')
+						orderHistory[orderHistory.length] = new Array(rpair, 'buy', base[exchange[0]][sbl]['lotsize'], base[exchange[0]][sbl]['ask'])
+						jsonOrders = JSON.stringify(orderHistory);
+						fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.json', jsonOrders, (err) => {
+							if (err) throw err;
+						  });
+						stringify(orderHistory, function(err, output){
+							fs.writeFile(__dirname + '/../orderdata/orders:'+rpair+'.csv', output, (err) => {
+								if (err) throw err;
+								console.log('Order Data for '+ rpair +'.csv has been saved!');
+							  });
+							  if (err) throw err;
+						  });
 					}catch (error) {
 					
 					console.error('Failed to place null buy order', error);
